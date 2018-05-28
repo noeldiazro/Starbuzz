@@ -25,6 +25,13 @@ public class DrinkActivity extends Activity {
         SQLiteOpenHelper startbuzzDatabaseHelper = new StarbuzzDatabaseHelper(this);
         try {
             SQLiteDatabase db = startbuzzDatabaseHelper.getReadableDatabase();
+            Cursor cursor = db.query("DRINK",
+                    new String[] {"NAME", "DESCRIPTION", "IMAGE_RESOURCE_ID"},
+                    "_id = ?",
+                    new String[] {Long.toString(id)},
+                    null, null, null);
+
+            cursor.close();
         }
         catch (SQLiteException e) {
             Toast.makeText(this, "Database unavailable", Toast.LENGTH_SHORT).show();
