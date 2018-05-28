@@ -16,56 +16,45 @@ public class StarbuzzDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        StarbuzzDatabaseCreator creator = new StarbuzzDatabaseCreator(db);
-        creator.createTable();
-        creator.populateTable();
+        updateMyDatabase(db, 0);
     }
-
-
-
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        updateMyDatabase(db, oldVersion);
     }
 
-    private static class StarbuzzDatabaseCreator {
-
-        private final SQLiteDatabase db;
-
-        private StarbuzzDatabaseCreator(SQLiteDatabase db) {
-            this.db = db;
-        }
-
-        private void createTable() {
+    private void updateMyDatabase(SQLiteDatabase db, int fromVersion) {
+        if (fromVersion < 1) {
             db.execSQL("CREATE TABLE DRINK ("
                     + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
                     + "NAME TEXT, "
                     + "DESCRIPTION TEXT, "
-                    + "IMAGE_RESOURCE_ID INTEGER)");
-        }
+                    + "IMAGE_RESOURCE_ID INTEGER);");
 
-
-        private void populateTable() {
-            insert(new Drink("Latte",
+            insert(db, new Drink("Latte",
                     "A couple of espresso shots with steamed milk",
                     R.drawable.latte));
 
-            insert(new Drink("Cappuccino",
+            insert(db, new Drink("Cappuccino",
                     "Espresso, hot milk, and a steamed milk foam",
                     R.drawable.cappuccino));
 
-            insert(new Drink("Filter",
+            insert(db, new Drink("Filter",
                     "Highest quality beans roasted and brewed fresh",
                     R.drawable.filter));
         }
 
-        private void insert(Drink drink) {
-            ContentValues latteValues = new ContentValues();
-            latteValues.put("NAME", drink.getName());
-            latteValues.put("DESCRIPTION", drink.getDescription());
-            latteValues.put("IMAGE_RESOURCE_ID", drink.getImageResourceId());
-            db.insert("DRINK", null, latteValues);
+        if (fromVersion < 2) {
+            db.execSQL("ALTER TABLE DRINK ADD COLUMN FAVORITE NUMERIC;");
         }
+    }
+
+    private void insert(SQLiteDatabase db, Drink drink) {
+        ContentValues latteValues = new ContentValues();
+        latteValues.put("NAME", drink.getName());
+        latteValues.put("DESCRIPTION", drink.getDescription());
+        latteValues.put("IMAGE_RESOURCE_ID", drink.getImageResourceId());
+        db.insert("DRINK", null, latteValues);
     }
 }
