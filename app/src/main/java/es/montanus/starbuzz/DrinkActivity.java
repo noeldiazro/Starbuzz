@@ -3,6 +3,7 @@ package es.montanus.starbuzz;
 import android.app.Activity;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,7 +35,13 @@ public class DrinkActivity extends Activity {
             setName(drink.getName());
             setDescription(drink.getDescription());
             setImage(drink.getImageResourceId(), drink.getName());
+            setFavorite(drink.isFavorite());
         }
+    }
+
+    private void setFavorite(boolean favorite) {
+        CheckBox favoriteBox = findViewById(R.id.favorite);
+        favoriteBox.setSelected(favorite);
     }
 
     private void setName(String name) {
