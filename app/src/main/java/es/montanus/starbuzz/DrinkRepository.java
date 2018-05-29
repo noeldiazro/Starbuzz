@@ -1,5 +1,6 @@
 package es.montanus.starbuzz;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -34,5 +35,14 @@ public class DrinkRepository {
         db.close();
 
         return drink;
+    }
+
+    public void updateFavorite(long id, boolean favorite) {
+        SQLiteOpenHelper starbuzzDatabaseHelper = new StarbuzzDatabaseHelper(context);
+        try (SQLiteDatabase db = starbuzzDatabaseHelper.getWritableDatabase()) {
+            ContentValues values = new ContentValues();
+            values.put("FAVORITE", favorite);
+            db.update("DRINK", values, "_id = ?", new String[]{Long.toString(id)});
+        }
     }
 }

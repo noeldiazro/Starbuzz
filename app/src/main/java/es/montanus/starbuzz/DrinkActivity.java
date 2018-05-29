@@ -3,6 +3,7 @@ package es.montanus.starbuzz;
 import android.app.Activity;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 public class DrinkActivity extends Activity {
 
     private DrinkRepository repository;
+    private long id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,7 +24,7 @@ public class DrinkActivity extends Activity {
     }
 
     private void initViews() {
-        long id = getIntent().getLongExtra(DrinkCategoryActivity.DRINK_ID, -1);
+        id = getIntent().getLongExtra(DrinkCategoryActivity.DRINK_ID, -1);
         Drink drink = null;
         try {
             drink = repository.get(id);
@@ -41,7 +43,7 @@ public class DrinkActivity extends Activity {
 
     private void setFavorite(boolean favorite) {
         CheckBox favoriteBox = findViewById(R.id.favorite);
-        favoriteBox.setSelected(favorite);
+        favoriteBox.setChecked(favorite);
     }
 
     private void setName(String name) {
@@ -60,4 +62,8 @@ public class DrinkActivity extends Activity {
         photo.setContentDescription(contentDescription);
     }
 
+    public void onFavoriteClicked(View view) {
+        CheckBox favoriteBox = (CheckBox)view;
+        repository.updateFavorite(id, favoriteBox.isChecked());
+    }
 }
