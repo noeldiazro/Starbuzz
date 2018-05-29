@@ -3,6 +3,7 @@
     <string name="starbuzz_logo">Starbuzz Logo</string>
     <string name="drink_photo">Drink photo</string>
     <string name="favorite">Favorite</string>
+    <string name="favorite_list_header">Your favorite drinks:</string>
     <string-array name="options">
         <item>Drinks</item>
         <item>Food</item>
