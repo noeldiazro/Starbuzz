@@ -24,7 +24,7 @@ public class DrinkActivity extends Activity {
         long id = getIntent().getLongExtra(DrinkCategoryActivity.DRINK_ID, -1);
         Drink drink = null;
         try {
-            drink = repository.get(id + 1);
+            drink = repository.get(id);
         }
         catch (SQLiteException e) {
             Toast.makeText(this, "Database unavailable", Toast.LENGTH_SHORT).show();
