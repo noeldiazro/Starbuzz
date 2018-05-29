@@ -2,12 +2,17 @@ package es.montanus.starbuzz;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class DrinkCategoryActivity extends Activity {
 
@@ -27,9 +32,22 @@ public class DrinkCategoryActivity extends Activity {
     }
 
     private ListAdapter makeListAdapter() {
-        return new ArrayAdapter<>(this,
-                    android.R.layout.simple_list_item_1,
-                    Drink.drinks);
+        SQLiteOpenHelper starbuzzDatabaseHelper = new StarbuzzDatabaseHelper(this);
+        try {
+            SQLiteDatabase db = starbuzzDatabaseHelper.getReadableDatabase();
+            Cursor cursor = db.query("DRINK",
+                    new String[]{"_id", "NAME"},
+                    null, null,
+                    null, null, null);
+            //Code to use data from the database
+        }
+        catch (SQLiteException e) {
+            Toast.makeText(this, "Database unavailable", Toast.LENGTH_SHORT).show();
+        }
+
+        return new ArrayAdapter<Drink>(this,
+                android.R.layout.simple_list_item_1,
+                Drink.drinks);
     }
 
     private AdapterView.OnItemClickListener makeListener() {
