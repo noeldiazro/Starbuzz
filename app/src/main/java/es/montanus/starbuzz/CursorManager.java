@@ -17,13 +17,17 @@ public class CursorManager {
     }
 
     public Cursor getCursor() {
+        return getCursor(null, null);
+    }
+
+    public Cursor getCursor(String selection, String[] selectionArgs) {
         SQLiteOpenHelper starbuzzDatabaseHelper = new StarbuzzDatabaseHelper(context);
         cursor = null;
         try {
             db = starbuzzDatabaseHelper.getReadableDatabase();
             cursor = db.query("DRINK",
                     new String[]{"_id", "NAME"},
-                    null, null,
+                    selection, selectionArgs,
                     null, null, null);
         } catch (SQLiteException e) {
             Toast.makeText(context, "Database unavailable", Toast.LENGTH_SHORT).show();
