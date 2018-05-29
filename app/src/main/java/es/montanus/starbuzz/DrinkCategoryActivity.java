@@ -9,14 +9,16 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 public class DrinkCategoryActivity extends Activity {
 
     public static final String DRINK_ID = "id";
+    private Cursor cursor;
+    private SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,20 +36,23 @@ public class DrinkCategoryActivity extends Activity {
     private ListAdapter makeListAdapter() {
         SQLiteOpenHelper starbuzzDatabaseHelper = new StarbuzzDatabaseHelper(this);
         try {
-            SQLiteDatabase db = starbuzzDatabaseHelper.getReadableDatabase();
-            Cursor cursor = db.query("DRINK",
+            db = starbuzzDatabaseHelper.getReadableDatabase();
+            cursor = db.query("DRINK",
                     new String[]{"_id", "NAME"},
                     null, null,
                     null, null, null);
-            //Code to use data from the database
+
+            return new SimpleCursorAdapter(this,
+                    android.R.layout.simple_list_item_1,
+                    cursor,
+                    new String[]{"NAME"},
+                    new int[]{android.R.id.text1},
+                    0);
         }
         catch (SQLiteException e) {
             Toast.makeText(this, "Database unavailable", Toast.LENGTH_SHORT).show();
         }
-
-        return new ArrayAdapter<Drink>(this,
-                android.R.layout.simple_list_item_1,
-                Drink.drinks);
+        return null;
     }
 
     private AdapterView.OnItemClickListener makeListener() {
@@ -60,5 +65,12 @@ public class DrinkCategoryActivity extends Activity {
                 startActivity(intent);
             }
         };
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        cursor.close();
+        db.close();
     }
 }
