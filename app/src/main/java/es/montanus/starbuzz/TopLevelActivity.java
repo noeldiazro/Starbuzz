@@ -2,15 +2,18 @@ package es.montanus.starbuzz;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 public class TopLevelActivity extends Activity {
 
     private CursorManager cursorManager;
+    private ListView favoritesList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,12 +41,12 @@ public class TopLevelActivity extends Activity {
     }
 
     private void setupFavoritesListView() {
-        final ListView favoritesList = findViewById(R.id.favorite_list);
+        favoritesList = findViewById(R.id.favorite_list);
         cursorManager = new CursorManager(this);
         final SimpleCursorAdapter adapter =
                 new SimpleCursorAdapter(this,
                         android.R.layout.simple_list_item_1,
-                        cursorManager.getCursor("FAVORITE = ?", new String[]{Integer.toString(1)}),
+                        getCursorForFavoriteDrinks(),
                         new String[]{"NAME"}, new int[]{android.R.id.text1}, 0);
         favoritesList.setAdapter(adapter);
         favoritesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -54,6 +57,17 @@ public class TopLevelActivity extends Activity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        CursorAdapter cursorAdapter = (CursorAdapter) favoritesList.getAdapter();
+        cursorAdapter.changeCursor(getCursorForFavoriteDrinks());
+    }
+
+    private Cursor getCursorForFavoriteDrinks() {
+        return cursorManager.getCursor("FAVORITE = ?", new String[]{Integer.toString(1)});
     }
 
     @Override
