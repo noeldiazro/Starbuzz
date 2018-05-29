@@ -4,7 +4,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.AsyncTask;
+import android.widget.Toast;
 
 public class DrinkRepository {
     private final Context context;
@@ -38,11 +41,42 @@ public class DrinkRepository {
     }
 
     public void updateFavorite(long id, boolean favorite) {
-        SQLiteOpenHelper starbuzzDatabaseHelper = new StarbuzzDatabaseHelper(context);
-        try (SQLiteDatabase db = starbuzzDatabaseHelper.getWritableDatabase()) {
-            ContentValues values = new ContentValues();
+        new UpdateDrinkTask(id, favorite).execute();
+    }
+
+
+    private class UpdateDrinkTask extends AsyncTask<Object, Void, Boolean> {
+        private final long id;
+        private final boolean favorite;
+        private ContentValues values;
+
+        private UpdateDrinkTask(long id, boolean favorite) {
+            this.id = id;
+            this.favorite = favorite;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            values = new ContentValues();
             values.put("FAVORITE", favorite);
-            db.update("DRINK", values, "_id = ?", new String[]{Long.toString(id)});
+        }
+
+        @Override
+        protected Boolean doInBackground(Object... objects) {
+            Boolean result = true;
+            SQLiteOpenHelper starbuzzDatabaseHelper = new StarbuzzDatabaseHelper(context);
+            try (SQLiteDatabase db = starbuzzDatabaseHelper.getWritableDatabase()) {
+                db.update("DRINK", values, "_id = ?", new String[]{Long.toString(id)});
+            } catch (SQLiteException e) {
+                result = false;
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if (!result)
+                Toast.makeText(context, "Database unavailable", Toast.LENGTH_SHORT).show();
         }
     }
 }
